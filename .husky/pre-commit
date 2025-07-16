@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# 執行 lint-staged
+npx lint-staged
+
+# 執行類型檢查
+npm run type-check
+
+# 執行測試 (僅針對變更的檔案)
+npm run test -- --bail --findRelatedTests --passWithNoTests
+
+echo "✅ Pre-commit checks passed!"

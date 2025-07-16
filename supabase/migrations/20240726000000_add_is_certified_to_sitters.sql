@@ -1,0 +1,2 @@
+ALTER TABLE sitters
+ADD COLUMN is_certified BOOLEAN DEFAULT FALSE;
