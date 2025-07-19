@@ -13,39 +13,37 @@ export default function ProfilePage() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [isSitter, setIsSitter] = useState(false);
 
-  const fetchUserAndProfile = useCallback(async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    setUser(user);
-
-    if (user) {
-      const { data, error } = await supabase.from('users').select('*').eq('id', user.id).single();
-
-      if (error && error.code !== 'PGRST116') {
-        // PGRST116: no rows found
-        console.error('Error fetching profile:', error);
-      } else if (data) {
-        setProfile(data);
-        setFullName(data.full_name || '');
-        setPhone(data.phone || '');
-        setAddress(data.address || '');
-        setIsSitter(data.is_sitter || false);
-      }
-    }
-    setLoading(false);
-  }, [supabase]);
-
   useEffect(() => {
+    const fetchUserAndProfile = async () => {
+      const {
+        data: { user }
+      } = await supabase.auth.getUser();
+      setUser(user);
+
+      if (user) {
+        const { data, error } = await supabase.from('users').select('*').eq('id', user.id).single();
+
+        if (error && error.code !== 'PGRST116') {
+          // PGRST116: no rows found
+          console.error('Error fetching profile:', error);
+        } else if (data) {
+          setFullName(data.full_name || '');
+          setPhone(data.phone || '');
+          setAddress(data.address || '');
+          setIsSitter(data.is_sitter || false);
+        }
+      }
+      setLoading(false);
+    };
+
     fetchUserAndProfile();
-  }, [fetchUserAndProfile]);
+  }, [supabase]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,19 +110,16 @@ export default function ProfilePage() {
             placeholder='輸入您的地址'
           />
         </FormGroup>
-        <FormGroup className="flex items-center space-x-2">
-          <Checkbox
-            id='isSitter'
-            checked={isSitter}
-            onCheckedChange={(checked: boolean) => setIsSitter(checked)}
-          />
-          <Label htmlFor='isSitter' className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
+        <FormGroup className='flex items-center space-x-2'>
+          <Checkbox id='isSitter' checked={isSitter} onCheckedChange={(checked: boolean) => setIsSitter(checked)} />
+          <Label
+            htmlFor='isSitter'
+            className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+          >
             我是一位保姆
           </Label>
         </FormGroup>
-        <Button type='submit'>
-          更新個人資料
-        </Button>
+        <Button type='submit'>更新個人資料</Button>
       </form>
     </FormContainer>
   );
