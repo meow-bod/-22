@@ -178,5 +178,17 @@ export interface DashboardStats {
   completedServices: number;
 }
 
+// 使用者個人資料
+export interface Profile {
+  id: string;
+  full_name: string;
+  avatar_url: string;
+  service_area?: string;
+  introduction?: string;
+  price_per_hour?: number;
+  qualifications?: string;
+  user_type: 'owner' | 'sitter';
+}
+
 // 匯出所有型別
 export type { User as SupabaseUser };

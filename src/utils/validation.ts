@@ -184,12 +184,13 @@ export function getFirstError(errors: Record<string, string>): string | null {
 }
 
 // 清理表單資料（移除前後空白）
-export function sanitizeFormData<T extends Record<string, unknown>>(data: T): T {
+export function sanitizeFormData<T extends Record<string, any>>(data: T): T {
   const sanitized = { ...data };
 
-  Object.keys(sanitized).forEach(key => {
-    if (typeof sanitized[key] === 'string') {
-      sanitized[key] = sanitized[key].trim();
+  (Object.keys(sanitized) as Array<keyof T>).forEach(key => {
+    const value = sanitized[key];
+    if (typeof value === 'string') {
+      sanitized[key] = value.trim() as T[keyof T];
     }
   });
 

@@ -11,9 +11,7 @@ interface FormFieldConfig {
 }
 
 // 表單配置介面
-interface FormConfig {
-  [key: string]: FormFieldConfig;
-}
+type FormConfig<T> = Partial<Record<keyof T, FormFieldConfig>>;
 
 // 表單狀態介面
 interface FormState<T> {
@@ -62,7 +60,7 @@ export function useForm<T extends Record<string, unknown>>(
   // 驗證單個欄位
   const validateField = useCallback(
     (field: keyof T, value: unknown): string | null => {
-      const fieldConfig = config[field as string];
+      const fieldConfig = config[field];
       if (!fieldConfig) return null;
 
       // 必填驗證
@@ -132,7 +130,7 @@ export function useForm<T extends Record<string, unknown>>(
   // 設定單個欄位值
   const setValue = useCallback(
     (field: keyof T, value: unknown) => {
-      const fieldConfig = config[field as string];
+      const fieldConfig = config[field];
       const transformedValue = fieldConfig?.transform ? fieldConfig.transform(value) : value;
 
       setValuesState(prev => ({

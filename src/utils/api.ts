@@ -15,7 +15,6 @@ function handleError<T>(error: unknown): ApiResponse<T> {
     error: message,
     success: false
   };
-  
 }
 
 // 通用成功回應
@@ -39,7 +38,7 @@ export const authApi = {
       if (error) throw error;
       return handleSuccess(user);
     } catch (error) {
-      return handleError<Pet>(error);
+      return handleError(error);
     }
   },
 
@@ -50,7 +49,7 @@ export const authApi = {
       if (error) throw error;
       return handleSuccess(null);
     } catch (error) {
-      return handleError<Pet>(error);
+      return handleError(error);
     }
   }
 };
@@ -58,7 +57,7 @@ export const authApi = {
 // 寵物相關 API
 export const petApi = {
   // 取得使用者的所有寵物
-    async getUserPets(userId: string): Promise<ApiResponse<Pet[]>> {
+  async getUserPets(userId: string): Promise<ApiResponse<Pet[]>> {
     try {
       const { data, error } = await supabase
         .from('pets')
@@ -69,20 +68,7 @@ export const petApi = {
       if (error) throw error;
       return handleSuccess(data || []);
     } catch (error) {
-      return handleError<Pet[]>(error);
-    }
-  },
-    try {
-      const { data, error } = await supabase
-        .from('pets')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return handleSuccess(data || []);
-    } catch (error) {
-      return handleError<null>(error);
+      return handleError(error);
     }
   },
 
@@ -101,7 +87,7 @@ export const petApi = {
       if (error) throw error;
       return handleSuccess(data);
     } catch (error) {
-      return handleError<Sitter[]>(error);
+      return handleError(error);
     }
   },
 
@@ -113,7 +99,7 @@ export const petApi = {
       if (error) throw error;
       return handleSuccess(data);
     } catch (error) {
-      return handleError<Sitter>(error);
+      return handleError(error);
     }
   },
 
@@ -125,7 +111,7 @@ export const petApi = {
       if (error) throw error;
       return handleSuccess(null);
     } catch (error) {
-      return handleError<Sitter>(error);
+      return handleError(error);
     }
   }
 };
@@ -152,7 +138,7 @@ export const sitterApi = {
       if (error) throw error;
       return handleSuccess(data || []);
     } catch (error) {
-      return handleError<Sitter | null>(error);
+      return handleError(error);
     }
   },
 
@@ -179,7 +165,7 @@ export const sitterApi = {
       if (error) throw error;
       return handleSuccess(data);
     } catch (error) {
-      return handleError<Review[]>(error);
+      return handleError(error);
     }
   },
 
@@ -199,7 +185,7 @@ export const sitterApi = {
       if (error) throw error;
       return handleSuccess(data);
     } catch (error) {
-      return handleError<Profile>(error);
+      return handleError(error);
     }
   },
 
@@ -211,7 +197,7 @@ export const sitterApi = {
       if (error && error.code !== 'PGRST116') throw error; // PGRST116 是找不到資料的錯誤碼
       return handleSuccess(data);
     } catch (error) {
-      return handleError<Profile>(error);
+      return handleError(error);
     }
   }
 };
@@ -238,7 +224,7 @@ export const reviewApi = {
       if (error) throw error;
       return handleSuccess(data || []);
     } catch (error) {
-      return handleError<string>(error);
+      return handleError(error);
     }
   }
 };

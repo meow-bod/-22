@@ -9,7 +9,7 @@ interface ApiState<T> {
 }
 
 // API 選項介面
-interface ApiOptions {
+interface ApiOptions<T> {
   immediate?: boolean; // 是否立即執行
   cacheTime?: number; // 快取時間（毫秒）
   retryCount?: number; // 重試次數
@@ -68,7 +68,7 @@ class ApiCache<T> {
 const apiCache = new ApiCache<unknown>();
 
 // 通用 API Hook
-export function useApi<T>(apiFunction: () => Promise<T>, dependencies: unknown[] = [], options: ApiOptions = {}) {
+export function useApi<T>(apiFunction: () => Promise<T>, dependencies: unknown[] = [], options: ApiOptions<T> = {}) {
   const {
     immediate = true,
     cacheTime = 5 * 60 * 1000, // 預設快取 5 分鐘
@@ -112,7 +112,7 @@ export function useApi<T>(apiFunction: () => Promise<T>, dependencies: unknown[]
 
       // 檢查快取
       if (!forceRefresh && apiCache.has(key)) {
-        const cachedData = apiCache.get(key);
+        const cachedData = apiCache.get(key) as T;
         setState(prev => ({
           ...prev,
           data: cachedData,
@@ -157,8 +157,9 @@ export function useApi<T>(apiFunction: () => Promise<T>, dependencies: unknown[]
 
           return result;
         } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : '請求失敗';
           // 如果請求被取消，不處理錯誤
-          if (controller.signal.aborted || error.message === 'Request aborted') {
+          if (controller.signal.aborted || errorMessage === 'Request aborted') {
             return Promise.reject(error);
           }
 
@@ -172,7 +173,6 @@ export function useApi<T>(apiFunction: () => Promise<T>, dependencies: unknown[]
           }
 
           // 所有重試都失敗了
-          const errorMessage = error.message || '請求失敗';
           setState({
             data: null,
             loading: false,
@@ -244,7 +244,7 @@ export function useApi<T>(apiFunction: () => Promise<T>, dependencies: unknown[]
 }
 
 // 突變 API Hook（用於 POST、PUT、DELETE 等操作）
-export function useMutation<T, P>( 
+export function useMutation<T, P>(
   mutationFunction: (params: P) => Promise<T>,
   options: {
     onSuccess?: (data: T, params: P) => void;
@@ -302,12 +302,12 @@ export function useMutation<T, P>(
 
         return result;
       } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : '操作失敗';
         // 如果請求被取消，不處理錯誤
-        if (controller.signal.aborted || error.message === 'Request aborted') {
+        if (controller.signal.aborted || errorMessage === 'Request aborted') {
           return Promise.reject(error);
         }
 
-        const errorMessage = error.message || '操作失敗';
         setState({
           data: null,
           loading: false,
@@ -357,7 +357,7 @@ export function usePaginatedApi<T>(
   apiFunction: (page: number, limit: number) => Promise<{ data: T[]; total: number; page: number; limit: number }>,
   initialPage = 1,
   initialLimit = 10,
-  options: ApiOptions = {}
+  options: ApiOptions<{ data: T[]; total: number; page: number; limit: number }> = {}
 ) {
   const [page, setPage] = useState(initialPage);
   const [limit, setLimit] = useState(initialLimit);

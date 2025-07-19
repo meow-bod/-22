@@ -265,8 +265,8 @@ export function useResponsiveClassName(classNames: Partial<Record<Breakpoint | M
 export function generateResponsiveStyles<T>(
   property: string,
   values: Partial<Record<Breakpoint, T>>
-): Record<string, Record<string, T> | T> {
-  const styles: Record<string, Record<string, T> | T> = {};
+): Record<string, any> {
+  const styles: Record<string, any> = {};
 
   Object.entries(values).forEach(([breakpoint, value]) => {
     const bp = breakpoint as Breakpoint;
@@ -277,7 +277,7 @@ export function generateResponsiveStyles<T>(
       if (!styles[mediaQuery]) {
         styles[mediaQuery] = {};
       }
-      styles[mediaQuery][property] = value;
+      (styles[mediaQuery] as Record<string, T>)[property] = value as T;
     }
   });
 
