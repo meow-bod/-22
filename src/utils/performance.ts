@@ -30,9 +30,9 @@ class PerformanceMonitor {
           entries.forEach(entry => {
             if (entry.entryType === 'navigation') {
               const navEntry = entry as PerformanceNavigationTiming;
-              this.recordMetric('page_load_time', navEntry.loadEventEnd - navEntry.navigationStart);
-              this.recordMetric('dom_content_loaded', navEntry.domContentLoadedEventEnd - navEntry.navigationStart);
-              this.recordMetric('first_paint', navEntry.loadEventStart - navEntry.navigationStart);
+              this.recordMetric('page_load_time', navEntry.loadEventEnd - navEntry.startTime);
+              this.recordMetric('dom_content_loaded', navEntry.domContentLoadedEventEnd - navEntry.startTime);
+              this.recordMetric('first_paint', navEntry.loadEventStart - navEntry.startTime);
             }
           });
         });
@@ -81,7 +81,6 @@ class PerformanceMonitor {
     }
 
     // 在開發環境中記錄到控制台
-
   }
 
   // 測量函數執行時間

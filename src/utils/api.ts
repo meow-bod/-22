@@ -7,14 +7,15 @@ import { Pet, Sitter, Review, ApiResponse, PetFormData, SitterFormData, Profile 
 const supabase = createClient();
 
 // 通用錯誤處理函數
-function handleError(error: unknown): ApiResponse<null> {
+function handleError<T>(error: unknown): ApiResponse<T> {
   console.error('API Error:', error);
   const message = error instanceof Error ? error.message : '發生未知錯誤';
   return {
-    data: null,
+    data: null as T, // 使用類型斷言來符合泛型 T
     error: message,
     success: false
   };
+  
 }
 
 // 通用成功回應
@@ -38,7 +39,7 @@ export const authApi = {
       if (error) throw error;
       return handleSuccess(user);
     } catch (error) {
-      return handleError(error);
+      return handleError<Pet>(error);
     }
   },
 
@@ -49,7 +50,7 @@ export const authApi = {
       if (error) throw error;
       return handleSuccess(null);
     } catch (error) {
-      return handleError(error);
+      return handleError<Pet>(error);
     }
   }
 };
@@ -57,7 +58,7 @@ export const authApi = {
 // 寵物相關 API
 export const petApi = {
   // 取得使用者的所有寵物
-  async getUserPets(userId: string): Promise<ApiResponse<Pet[]>> {
+    async getUserPets(userId: string): Promise<ApiResponse<Pet[]>> {
     try {
       const { data, error } = await supabase
         .from('pets')
@@ -68,7 +69,20 @@ export const petApi = {
       if (error) throw error;
       return handleSuccess(data || []);
     } catch (error) {
-      return handleError(error);
+      return handleError<Pet[]>(error);
+    }
+  },
+    try {
+      const { data, error } = await supabase
+        .from('pets')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return handleSuccess(data || []);
+    } catch (error) {
+      return handleError<null>(error);
     }
   },
 
@@ -87,7 +101,7 @@ export const petApi = {
       if (error) throw error;
       return handleSuccess(data);
     } catch (error) {
-      return handleError(error);
+      return handleError<Sitter[]>(error);
     }
   },
 
@@ -99,7 +113,7 @@ export const petApi = {
       if (error) throw error;
       return handleSuccess(data);
     } catch (error) {
-      return handleError(error);
+      return handleError<Sitter>(error);
     }
   },
 
@@ -111,7 +125,7 @@ export const petApi = {
       if (error) throw error;
       return handleSuccess(null);
     } catch (error) {
-      return handleError(error);
+      return handleError<Sitter>(error);
     }
   }
 };
@@ -138,7 +152,7 @@ export const sitterApi = {
       if (error) throw error;
       return handleSuccess(data || []);
     } catch (error) {
-      return handleError(error);
+      return handleError<Sitter | null>(error);
     }
   },
 
@@ -165,7 +179,7 @@ export const sitterApi = {
       if (error) throw error;
       return handleSuccess(data);
     } catch (error) {
-      return handleError(error);
+      return handleError<Review[]>(error);
     }
   },
 
@@ -185,7 +199,7 @@ export const sitterApi = {
       if (error) throw error;
       return handleSuccess(data);
     } catch (error) {
-      return handleError(error);
+      return handleError<Profile>(error);
     }
   },
 
@@ -197,7 +211,7 @@ export const sitterApi = {
       if (error && error.code !== 'PGRST116') throw error; // PGRST116 是找不到資料的錯誤碼
       return handleSuccess(data);
     } catch (error) {
-      return handleError(error);
+      return handleError<Profile>(error);
     }
   }
 };
@@ -224,7 +238,7 @@ export const reviewApi = {
       if (error) throw error;
       return handleSuccess(data || []);
     } catch (error) {
-      return handleError(error);
+      return handleError<string>(error);
     }
   }
 };
