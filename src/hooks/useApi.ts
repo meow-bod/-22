@@ -68,7 +68,11 @@ class ApiCache<T> {
 const apiCache = new ApiCache<unknown>();
 
 // 通用 API Hook
-export function useApi<T>(apiFunction: () => Promise<T>, dependencies: unknown[] = [], options: ApiOptions<T> = {}) {
+export function useApi<T>(
+  apiFunction: () => Promise<T>,
+  dependencies: unknown[] = [],
+  options: ApiOptions<T> & { cacheKey?: string } = {}
+) {
   const {
     immediate = true,
     cacheTime = 5 * 60 * 1000, // 預設快取 5 分鐘
@@ -87,12 +91,9 @@ export function useApi<T>(apiFunction: () => Promise<T>, dependencies: unknown[]
 
   const abortControllerRef = useRef<AbortController | null>(null);
   const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const cacheKey = useRef<string>('');
-
-  // 生成快取鍵
   const generateCacheKey = useCallback(() => {
-    return `${apiFunction.toString()}_${JSON.stringify(dependencies)}`;
-  }, [apiFunction, dependencies]);
+    return options.cacheKey || `${apiFunction.toString()}_${JSON.stringify(dependencies)}`;
+  }, [apiFunction, dependencies, options.cacheKey]);
 
   // 執行 API 請求
   const execute = useCallback(
@@ -108,7 +109,6 @@ export function useApi<T>(apiFunction: () => Promise<T>, dependencies: unknown[]
       }
 
       const key = generateCacheKey();
-      cacheKey.current = key;
 
       // 檢查快取
       if (!forceRefresh && apiCache.has(key)) {
@@ -201,8 +201,9 @@ export function useApi<T>(apiFunction: () => Promise<T>, dependencies: unknown[]
 
   // 清除快取
   const clearCache = useCallback(() => {
-    apiCache.clear(cacheKey.current);
-  }, []);
+    const key = generateCacheKey();
+    apiCache.clear(key);
+  }, [generateCacheKey]);
 
   // 重置狀態
   const reset = useCallback(() => {

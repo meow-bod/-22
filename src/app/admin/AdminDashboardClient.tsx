@@ -14,7 +14,7 @@ interface Applicant {
   users: {
     id: string;
     full_name: string | null;
-  } | null;
+  }[] | null;
 }
 
 interface Pet {
@@ -89,7 +89,7 @@ const AdminDashboardClient = ({ initialApplicants, usersWithPets }: AdminDashboa
               {applicants.map(applicant => (
                 <tr key={applicant.id}>
                   <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>
-                    {applicant.users?.full_name || 'N/A'}
+                    {applicant.users?.[0]?.full_name || 'N/A'}
                   </td>
                   <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
                     {new Date(applicant.created_at).toLocaleDateString()}

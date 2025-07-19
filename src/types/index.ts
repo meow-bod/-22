@@ -42,6 +42,7 @@ export interface Sitter {
   service_area: string;
   introduction: string;
   price_per_hour: number;
+  is_certified?: boolean;
 }
 
 export interface SitterFormData {
@@ -49,6 +50,11 @@ export interface SitterFormData {
   introduction: string;
   price_per_hour: number;
   qualifications: string;
+  experience: string;
+  availability: string;
+  emergency_contact: string;
+  has_insurance: boolean;
+  has_first_aid: boolean;
 }
 
 // 評價相關型別
@@ -188,6 +194,11 @@ export interface Profile {
   price_per_hour?: number;
   qualifications?: string;
   user_type: 'owner' | 'sitter';
+}
+
+// 表單驗證錯誤型別
+export interface ValidationErrors {
+  [key: string]: string;
 }
 
 // 匯出所有型別

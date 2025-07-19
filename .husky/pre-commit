@@ -5,7 +5,7 @@
 npx lint-staged
 
 # 執行類型檢查
-# npm run type-check
+npm run type-check
 
 # 執行測試 (僅針對變更的檔案)
 # npm run test -- --bail --findRelatedTests --passWithNoTests

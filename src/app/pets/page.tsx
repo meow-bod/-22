@@ -4,11 +4,11 @@ import { User } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
 
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { FullPageLoading, LoadingSpinner } from '@/components/LoadingSpinner';
 import { PetList } from '@/components/PetList';
 import { SearchInput } from '@/components/SearchInput';
-import { FormContainer, FormGroup, Label, Input, Button, Select } from '@/components/ui/Form';
-import { ErrorMessage } from '@/components/ui/messages/ErrorMessage';
+import { FormContainer, FormGroup, Label, Input, Button } from '@/components/ui/Form';
+import ErrorMessage from '@/components/ui/messages/ErrorMessage';
 import { createClient } from '@/lib/supabase/client';
 import { Pet, PetFormData, ValidationErrors } from '@/types';
 import { petApi as petAPI } from '@/utils/api';
@@ -100,9 +100,9 @@ export default function PetsPage() {
     setFormData({
       name: pet.name,
       pet_type: pet.pet_type,
-      breed: pet.breed,
-      age: pet.age,
-      notes: pet.notes
+      breed: pet.breed || '',
+      age: pet.age ?? null,
+      notes: pet.notes || ''
     });
     setShowAddForm(true);
   }, []);
@@ -137,7 +137,7 @@ export default function PetsPage() {
   };
 
   if (loading) {
-    return <LoadingSpinner size='large' text='載入寵物資料中...' fullScreen />;
+    return <FullPageLoading text='載入寵物資料中...' />;
   }
 
   return (
@@ -167,12 +167,11 @@ export default function PetsPage() {
         </div>
 
         {/* 錯誤訊息 */}
-        {error && <ErrorMessage message={error} onClose={() => setError(null)} className='mb-6' />}
+        {error && <ErrorMessage message={error} />}
 
         {/* 新增/編輯表單 */}
         {showAddForm && (
-          <FormContainer>
-            <h2 className='text-xl font-semibold mb-4'>{editingPet ? '編輯寵物資料' : '新增寵物'}</h2>
+          <FormContainer title={editingPet ? '編輯寵物資料' : '新增寵物'}>
             <form onSubmit={handleSubmit}>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 <FormGroup>
@@ -183,18 +182,18 @@ export default function PetsPage() {
                     required
                     value={formData.name}
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
-                    error={!!validationErrors.name}
+                    className={validationErrors.name ? 'border-red-500' : ''}
                   />
                   {validationErrors.name && <p className='mt-1 text-sm text-red-600'>{validationErrors.name}</p>}
                 </FormGroup>
                 <FormGroup>
                   <Label htmlFor='pet_type'>寵物類型 *</Label>
-                  <Select
+                  <select
                     id='pet_type'
                     required
                     value={formData.pet_type}
                     onChange={e => setFormData({ ...formData, pet_type: e.target.value })}
-                    error={!!validationErrors.pet_type}
+                      className={validationErrors.pet_type ? 'border-red-500' : ''}
                   >
                     <option value=''>請選擇</option>
                     <option value='Dog'>狗</option>
@@ -202,7 +201,7 @@ export default function PetsPage() {
                     <option value='Bird'>鳥</option>
                     <option value='Rabbit'>兔子</option>
                     <option value='Other'>其他</option>
-                  </Select>
+                  </select>
                   {validationErrors.pet_type && (
                     <p className='mt-1 text-sm text-red-600'>{validationErrors.pet_type}</p>
                   )}
@@ -223,9 +222,9 @@ export default function PetsPage() {
                     type='number'
                     min='0'
                     max='30'
-                    value={formData.age}
+                    value={formData.age ?? ''}
                     onChange={e => setFormData({ ...formData, age: parseInt(e.target.value) || 0 })}
-                    error={!!validationErrors.age}
+                    className={validationErrors.age ? 'border-red-500' : ''}
                   />
                   {validationErrors.age && <p className='mt-1 text-sm text-red-600'>{validationErrors.age}</p>}
                 </FormGroup>
@@ -243,10 +242,10 @@ export default function PetsPage() {
               </FormGroup>
               <div className='flex space-x-4'>
                 <Button type='submit' disabled={submitting}>
-                  {submitting && <LoadingSpinner size='small' className='mr-2' />}
+                  {submitting && <LoadingSpinner size='sm' className='mr-2' />}
                   {editingPet ? '更新' : '新增'}
                 </Button>
-                <Button type='button' onClick={resetForm} disabled={submitting} variant='secondary'>
+                <Button type='button' onClick={resetForm} disabled={submitting} className='bg-gray-200 text-gray-800 hover:bg-gray-300'>
                   取消
                 </Button>
               </div>
@@ -259,7 +258,7 @@ export default function PetsPage() {
           pets={pets}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          deletingPetId={deletingPetId}
+          deletingPetId={deletingPetId ?? undefined}
           searchTerm={searchTerm}
         />
       </div>

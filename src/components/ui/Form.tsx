@@ -13,13 +13,19 @@ export const FormContainer = ({ title, children }: { title: string; children: Re
 );
 
 // FormGroup: 用於包裹 Label 和 Input 的群組
-export const FormGroup = ({ children }: { children: React.ReactNode }) => (
-  <div className='space-y-1'>{children}</div>
-);
+export const FormGroup = ({ children }: { children: React.ReactNode }) => <div className='space-y-1'>{children}</div>;
 
 // Label: 表單欄位的標籤
-export const Label = ({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) => (
-  <label htmlFor={htmlFor} className='block text-sm font-medium text-text-subtle'>
+export const Label = ({
+  htmlFor,
+  children,
+  className
+}: {
+  htmlFor: React.LabelHTMLAttributes<HTMLLabelElement>['htmlFor'];
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <label htmlFor={htmlFor} className={`block text-sm font-medium text-text-subtle ${className}`}>
     {children}
   </label>
 );
@@ -40,14 +46,14 @@ interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
 }
 export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(({ className, label, ...props }, ref) => (
-  <div className="flex items-center">
+  <div className='flex items-center'>
     <input
       ref={ref}
-      type="checkbox"
+      type='checkbox'
       className={`h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary ${className}`}
       {...props}
     />
-    <Label htmlFor={props.id} className="ml-2 text-sm text-text-main">
+    <Label htmlFor={props.id} className='ml-2 text-sm text-text-main'>
       {label}
     </Label>
   </div>

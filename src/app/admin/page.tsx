@@ -8,7 +8,7 @@ import AdminDashboardClient from './AdminDashboardClient';
 // 這是伺服器元件，負責獲取資料和權限檢查
 const AdminDashboardPage = async () => {
   const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const {
     data: { user }
@@ -64,7 +64,7 @@ const AdminDashboardPage = async () => {
     return <p>讀取保姆資料時發生錯誤: {sittersError.message}</p>;
   }
 
-  return <AdminDashboardClient applicants={applicants || []} usersWithPets={usersWithPets || []} />;
+  return <AdminDashboardClient initialApplicants={applicants || []} usersWithPets={usersWithPets || []} />;
 };
 
 export default AdminDashboardPage;

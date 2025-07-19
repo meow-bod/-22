@@ -4,7 +4,7 @@ import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
-import { createClient } from '../../utils/supabase/client';
+import { createClient } from '../../lib/supabase/client';
 
 const Header = () => {
   const supabase = createClient();

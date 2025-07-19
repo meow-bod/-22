@@ -35,7 +35,7 @@ interface FormActions<T> {
   setSubmitting: (submitting: boolean) => void;
   reset: (values?: Partial<T>) => void;
   validate: (field?: keyof T) => boolean;
-  handleSubmit: (onSubmit: (values: T) => Promise<void> | void) => (e?: React.FormEvent) => Promise<void>;
+  handleSubmit: (onSubmit: (values: T, e?: React.FormEvent) => Promise<void> | void) => (e?: React.FormEvent) => Promise<void>;
 }
 
 // 自訂表單 Hook
@@ -222,7 +222,7 @@ export function useForm<T extends Record<string, unknown>>(
 
   // 處理表單提交
   const handleSubmit = useCallback(
-    (onSubmit: (values: T) => Promise<void> | void) => {
+    (onSubmit: (values: T, e?: React.FormEvent) => Promise<void> | void) => {
       return async (e?: React.FormEvent) => {
         if (e) {
           e.preventDefault();
@@ -245,7 +245,7 @@ export function useForm<T extends Record<string, unknown>>(
           }
 
           // 執行提交邏輯
-          await onSubmit(values);
+          await onSubmit(values, e);
 
           // 如果設定了提交後重置，則重置表單
           if (resetOnSubmit) {

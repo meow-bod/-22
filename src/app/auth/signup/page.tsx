@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { FormContainer, FormGroup, Label, Input, Button } from '@/components/ui/Form';
 import ErrorMessage from '@/components/ui/messages/ErrorMessage';
 import SuccessMessage from '@/components/ui/messages/SuccessMessage';
-import { usePasswordValidation } from '@/lib/hooks/usePasswordValidation';
+import { usePasswordValidation } from '../../../lib/hooks/usePasswordValidation';
 import { createClient } from '@/lib/supabase/client';
 
 export default function SignUpPage() {

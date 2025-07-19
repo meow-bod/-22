@@ -74,7 +74,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <FormContainer title='您的個人資料' description='管理您的個人資訊與設定。'>
+    <FormContainer title='您的個人資料'>
+      <p className='text-gray-600 mb-6'>管理您的個人資訊與設定。</p>
       <form onSubmit={handleUpdateProfile} className='space-y-6'>
         <FormGroup>
           <Label htmlFor='email'>電子郵件</Label>
@@ -110,15 +111,15 @@ export default function ProfilePage() {
             placeholder='輸入您的地址'
           />
         </FormGroup>
-        <FormGroup className='flex items-center space-x-2'>
-          <Checkbox id='isSitter' checked={isSitter} onCheckedChange={(checked: boolean) => setIsSitter(checked)} />
+        <div className='flex items-center space-x-2'>
+          <Checkbox id='isSitter' checked={isSitter} onChange={(e) => setIsSitter(e.target.checked)} label='' />
           <Label
             htmlFor='isSitter'
             className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
           >
             我是一位保姆
           </Label>
-        </FormGroup>
+        </div>
         <Button type='submit'>更新個人資料</Button>
       </form>
     </FormContainer>

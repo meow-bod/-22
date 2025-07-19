@@ -26,7 +26,7 @@ const PetList = React.memo(({ pets, onEdit, onDelete, deletingPetId, searchTerm 
       pet =>
         pet.name.toLowerCase().includes(term) ||
         pet.pet_type.toLowerCase().includes(term) ||
-        pet.breed.toLowerCase().includes(term)
+        (pet.breed && pet.breed.toLowerCase().includes(term))
     );
   }, [pets, searchTerm]);
 
@@ -45,11 +45,11 @@ const PetList = React.memo(({ pets, onEdit, onDelete, deletingPetId, searchTerm 
   }, [filteredPets]);
 
   if (pets.length === 0) {
-    return <EmptyState title='還沒有寵物' description='開始新增您的第一隻寵物吧！' actionText='新增寵物' />;
+    return <EmptyState title='還沒有寵物' message='開始新增您的第一隻寵物吧！' actionText='新增寵物' />;
   }
 
   if (filteredPets.length === 0 && searchTerm) {
-    return <EmptyState title='找不到符合的寵物' description={`沒有找到包含「${searchTerm}」的寵物`} />;
+    return <EmptyState title='找不到符合的寵物' message={`沒有找到包含「${searchTerm}」的寵物`} />;
   }
 
   return (

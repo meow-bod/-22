@@ -23,7 +23,7 @@ const mockPetWithoutNotes: Pet = {
   ...mockPet,
   id: '2',
   name: '小黑',
-  notes: null
+  notes: undefined
 };
 
 describe('PetCard', () => {

@@ -85,7 +85,6 @@ class ErrorBoundary extends Component<Props, State> {
               type='error'
               title='應用程式發生錯誤'
               message={this.state.error?.message || '發生未知錯誤'}
-              showRetry
               onRetry={this.handleRetry}
               className='mb-4'
             />

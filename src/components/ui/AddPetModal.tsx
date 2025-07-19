@@ -73,7 +73,7 @@ export default function AddPetModal({ user, isOpen, onClose, onPetAdded, petToEd
     };
 
     try {
-      if (isEditMode) {
+      if (isEditMode && petToEdit) {
         const { data, error } = await supabase
           .from('pets')
           .update(petData)

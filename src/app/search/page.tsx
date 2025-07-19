@@ -5,8 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Sitter } from '@/types'; // 確保 Sitter 型別與函式回傳的欄位一致
 
 const SearchPage = async () => {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   // 使用 .rpc() 呼叫我們在 Supabase 中建立的資料庫函式
   const { data: sitters, error } = await supabase.rpc('get_approved_sitters');

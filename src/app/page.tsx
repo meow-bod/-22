@@ -3,7 +3,7 @@
 import { PawPrint, Bone, Home as HomeIcon } from 'lucide-react';
 import Link from 'next/link';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Form';
 import HeroSection from '@/components/ui/HeroSection';
 import FeatureCard from '@/components/ui/FeatureCard';
 

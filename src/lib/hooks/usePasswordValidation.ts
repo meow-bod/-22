@@ -8,7 +8,7 @@ const passwordCriteria = {
   uppercase: { regex: /[A-Z]/, message: '密碼必須包含至少一個大寫字母' },
   number: { regex: /[0-9]/, message: '密碼必須包含至少一個數字' },
   specialChar: { regex: /[^a-zA-Z0-9]/, message: '密碼必須包含至少一個特殊字元' },
-};
+} as const;
 
 type CriteriaKey = keyof typeof passwordCriteria;
 
@@ -26,7 +26,7 @@ export function usePasswordValidation() {
   const validatePassword = useCallback((password: string) => {
     let isValid = true;
     let firstErrorMessage = '';
-    const newCriteriaMet: Record<CriteriaKey, boolean> = { ...criteriaMet };
+    const newCriteriaMet = {} as Record<CriteriaKey, boolean>;
 
     for (const key in passwordCriteria) {
       const criterion = passwordCriteria[key as CriteriaKey];

@@ -3,25 +3,31 @@
 import { type User } from '@supabase/supabase-js';
 import { useState, useEffect } from 'react';
 
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from '../lib/supabase/client';
 
 export function useUser() {
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error) {
-        console.error('Error fetching user:', error);
-      } else {
-        setUser(data.user);
-      }
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    // 立即獲取一次當前使用者狀態
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
       setLoading(false);
     };
 
-    fetchUser();
+    getCurrentUser();
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, [supabase]);
 
   return { user, loading };

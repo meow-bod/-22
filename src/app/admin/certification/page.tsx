@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from 'react';
 
-import { createClient } from '../../../utils/supabase/client';
+import { createClient } from '@/lib/supabase/client';
 
-// Define the type for a sitter
+// Define the type for a sitter based on the database query result
 type Sitter = {
   id: string;
-  full_name: string;
   is_certified: boolean;
+  users: {
+    full_name: string;
+  }[] | null;
   // Add other sitter properties as needed
 };
 
@@ -50,13 +52,8 @@ export default function AdminCertificationPage() {
         console.error('Error fetching sitters:', error);
         setSitters([]);
       } else if (data) {
-        const formattedSitters = data.map(sitter => ({
-          id: sitter.id,
-          is_certified: sitter.is_certified,
-          // The users object should exist due to FK constraint
-          full_name: sitter.users?.full_name || 'N/A'
-        }));
-        setSitters(formattedSitters);
+        // The data from the query now matches the Sitter type
+        setSitters(data);
       }
       setLoading(false);
     };
@@ -101,7 +98,7 @@ export default function AdminCertificationPage() {
           <tbody>
             {sitters.map(sitter => (
               <tr key={sitter.id}>
-                <td className='py-2 px-4 border-b text-center'>{sitter.full_name}</td>
+                <td className='py-2 px-4 border-b text-center'>{sitter.users?.[0]?.full_name || 'N/A'}</td>
                 <td className='py-2 px-4 border-b text-center'>
                   {sitter.is_certified ? 'Certified' : 'Not Certified'}
                 </td>
