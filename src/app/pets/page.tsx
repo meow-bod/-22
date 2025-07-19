@@ -4,17 +4,10 @@ import { User } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
 
-import { LoadingSpinner, EmptyState } from '@/components/LoadingSpinner';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { PetList } from '@/components/PetList';
 import { SearchInput } from '@/components/SearchInput';
-import {
-  FormContainer,
-  FormGroup,
-  Label,
-  Input,
-  Button,
-  Select,
-} from '@/components/ui/Form';
+import { FormContainer, FormGroup, Label, Input, Button, Select } from '@/components/ui/Form';
 import { ErrorMessage } from '@/components/ui/messages/ErrorMessage';
 import { createClient } from '@/lib/supabase/client';
 import { Pet, PetFormData, ValidationErrors } from '@/types';
@@ -45,32 +38,32 @@ export default function PetsPage() {
   });
 
   useEffect(() => {
-    checkUser();
-  }, []);
+    const checkUser = async () => {
+      const {
+        data: { user }
+      } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/auth/login');
+        return;
+      }
+      setUser(user);
+      fetchPets(user.id);
+    };
 
-  const checkUser = async () => {
-    const {
-      data: { user }
-    } = await supabase.auth.getUser();
-    if (!user) {
-      router.push('/auth/login');
-      return;
-    }
-    setUser(user);
-    fetchPets(user.id);
-  };
+    checkUser();
+  }, [supabase.auth, router]);
 
   const fetchPets = async (userId: string) => {
-    try {
-      setError(null);
-      const data = await petAPI.getUserPets(userId);
-      setPets(data);
-    } catch (error) {
-      console.error('獲取寵物資料失敗:', error);
-      setError('無法載入寵物資料，請稍後再試');
-    } finally {
-      setLoading(false);
+    setLoading(true);
+    setError(null);
+    const response = await petAPI.getUserPets(userId);
+    if (response.success && response.data) {
+      setPets(response.data);
+    } else {
+      setError(response.error || '無法載入寵物資料，請稍後再試');
+      setPets([]); // 清空舊資料
     }
+    setLoading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -88,22 +81,17 @@ export default function PetsPage() {
     setSubmitting(true);
     setError(null);
 
-    try {
-      if (editingPet) {
-        await petAPI.updatePet(editingPet.id, formData);
-      } else {
-        await petAPI.createPet({ ...formData, user_id: user.id });
-      }
+    const apiCall = editingPet ? petAPI.updatePet(editingPet.id, formData) : petAPI.createPet(user.id, formData);
 
-      // 重新獲取資料
+    const response = await apiCall;
+
+    if (response.success) {
       await fetchPets(user.id);
       resetForm();
-    } catch (error) {
-      console.error('操作失敗:', error);
-      setError(editingPet ? '更新寵物資料失敗' : '新增寵物失敗');
-    } finally {
-      setSubmitting(false);
+    } else {
+      setError(response.error || (editingPet ? '更新寵物資料失敗' : '新增寵物失敗'));
     }
+    setSubmitting(false);
   };
 
   // 使用 useCallback 優化函數，避免不必要的重新渲染
@@ -124,16 +112,14 @@ export default function PetsPage() {
       if (!confirm('確定要刪除這隻寵物嗎？')) return;
 
       setDeletingPetId(petId);
-      try {
-        setError(null);
-        await petAPI.deletePet(Number(petId));
+      setError(null);
+      const response = await petAPI.deletePet(petId);
+      if (response.success) {
         if (user) await fetchPets(user.id);
-      } catch (error) {
-        console.error('刪除失敗:', error);
-        setError('刪除寵物失敗，請稍後再試');
-      } finally {
-        setDeletingPetId(null);
+      } else {
+        setError(response.error || '刪除寵物失敗，請稍後再試');
       }
+      setDeletingPetId(null);
     },
     [user]
   );
