@@ -1,6 +1,7 @@
-import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
+
 import SearchResultList from '@/components/SearchResultList';
+import { createClient } from '@/lib/supabase/server';
 import { Sitter } from '@/types'; // 確保 Sitter 型別與函式回傳的欄位一致
 
 const SearchPage = async () => {

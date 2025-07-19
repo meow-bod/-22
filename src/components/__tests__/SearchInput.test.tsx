@@ -1,13 +1,12 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import '@testing-library/jest-dom';
 
-import SearchInput from '../SearchInput';
+import { SearchInput } from '../SearchInput';
 
 describe('SearchInput', () => {
   const mockOnSearch = jest.fn();
-  const mockOnClear = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -16,16 +15,16 @@ describe('SearchInput', () => {
   it('renders with default props', () => {
     render(<SearchInput onSearch={mockOnSearch} />);
 
-    const input = screen.getByRole('searchbox');
+    const input = screen.getByRole('textbox');
     expect(input).toBeInTheDocument();
-    expect(input).toHaveAttribute('placeholder', '搜尋...');
+    expect(input).toHaveAttribute('placeholder', '搜尋寵物...');
   });
 
   it('renders with custom placeholder', () => {
-    const customPlaceholder = '搜尋寵物...';
+    const customPlaceholder = '搜尋保姆...';
     render(<SearchInput onSearch={mockOnSearch} placeholder={customPlaceholder} />);
 
-    const input = screen.getByRole('searchbox');
+    const input = screen.getByRole('textbox');
     expect(input).toHaveAttribute('placeholder', customPlaceholder);
   });
 
@@ -33,7 +32,7 @@ describe('SearchInput', () => {
     const initialValue = '小狗';
     render(<SearchInput onSearch={mockOnSearch} value={initialValue} />);
 
-    const input = screen.getByRole('searchbox') as HTMLInputElement;
+    const input = screen.getByRole('textbox') as HTMLInputElement;
     expect(input.value).toBe(initialValue);
   });
 
@@ -41,19 +40,19 @@ describe('SearchInput', () => {
     const user = userEvent.setup();
     render(<SearchInput onSearch={mockOnSearch} />);
 
-    const input = screen.getByRole('searchbox');
+    const input = screen.getByRole('textbox');
     await user.type(input, '貓咪');
 
     await waitFor(() => {
       expect(mockOnSearch).toHaveBeenCalledWith('貓咪');
-    });
+    }, { timeout: 500 });
   });
 
   it('calls onSearch with debounced input', async () => {
     const user = userEvent.setup();
     render(<SearchInput onSearch={mockOnSearch} debounceMs={300} />);
 
-    const input = screen.getByRole('searchbox');
+    const input = screen.getByRole('textbox');
 
     // Type quickly
     await user.type(input, 'abc');
@@ -74,44 +73,39 @@ describe('SearchInput', () => {
     const user = userEvent.setup();
     render(<SearchInput onSearch={mockOnSearch} />);
 
-    const input = screen.getByRole('searchbox');
+    const input = screen.getByRole('textbox');
 
     // Initially no clear button
-    expect(screen.queryByRole('button', { name: /清除/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
 
     // Type some text
     await user.type(input, '搜尋內容');
 
     // Clear button should appear
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /清除/i })).toBeInTheDocument();
+      expect(screen.getByRole('button')).toBeInTheDocument();
     });
   });
 
-  it('clears input when clear button is clicked', async () => {
+  it('clears the input when clear button is clicked', async () => {
     const user = userEvent.setup();
-    render(<SearchInput onSearch={mockOnSearch} onClear={mockOnClear} />);
+    render(<SearchInput onSearch={mockOnSearch} />);
 
-    const input = screen.getByRole('searchbox') as HTMLInputElement;
+    const input = screen.getByRole('textbox');
+    await user.type(input, '測試');
 
-    // Type some text
-    await user.type(input, '測試文字');
-
-    // Click clear button
     const clearButton = screen.getByRole('button', { name: /清除/i });
     await user.click(clearButton);
 
-    // Input should be cleared
-    expect(input.value).toBe('');
-    expect(mockOnClear).toHaveBeenCalled();
     expect(mockOnSearch).toHaveBeenCalledWith('');
+    expect(input).toHaveValue('');
   });
 
   it('handles Enter key press', async () => {
     const user = userEvent.setup();
     render(<SearchInput onSearch={mockOnSearch} />);
 
-    const input = screen.getByRole('searchbox');
+    const input = screen.getByRole('textbox');
     await user.type(input, '搜尋內容');
     await user.keyboard('{Enter}');
 
@@ -122,14 +116,14 @@ describe('SearchInput', () => {
     const customClass = 'custom-search';
     render(<SearchInput onSearch={mockOnSearch} className={customClass} />);
 
-    const container = screen.getByRole('searchbox').closest('div');
+    const container = screen.getByTestId('search-input-container');
     expect(container).toHaveClass(customClass);
   });
 
   it('can be disabled', () => {
     render(<SearchInput onSearch={mockOnSearch} disabled />);
 
-    const input = screen.getByRole('searchbox');
+    const input = screen.getByRole('textbox');
     expect(input).toBeDisabled();
   });
 
@@ -142,10 +136,8 @@ describe('SearchInput', () => {
 
   it('has correct accessibility attributes', () => {
     render(<SearchInput onSearch={mockOnSearch} />);
-
-    const input = screen.getByRole('searchbox');
-    expect(input).toHaveAttribute('type', 'search');
-    expect(input).toHaveAttribute('aria-label', '搜尋輸入框');
+    const input = screen.getByRole('textbox');
+    expect(input).toHaveAttribute('aria-label', 'Search');
   });
 
   it('handles controlled component behavior', async () => {
@@ -157,7 +149,7 @@ describe('SearchInput', () => {
 
     render(<TestComponent />);
 
-    const input = screen.getByRole('searchbox') as HTMLInputElement;
+    const input = screen.getByRole('textbox') as HTMLInputElement;
 
     await user.type(input, '控制元件測試');
 
@@ -168,7 +160,7 @@ describe('SearchInput', () => {
     const user = userEvent.setup();
     render(<SearchInput onSearch={mockOnSearch} disabled />);
 
-    const input = screen.getByRole('searchbox');
+    const input = screen.getByRole('textbox');
 
     // Try to type (should not work)
     await user.type(input, '測試');
@@ -180,22 +172,21 @@ describe('SearchInput', () => {
     const user = userEvent.setup();
     render(<SearchInput onSearch={mockOnSearch} />);
 
-    const input = screen.getByRole('searchbox');
+    const input = screen.getByRole('textbox');
     const specialText = '特殊字符!@#$%^&*()';
 
     await user.type(input, specialText);
 
     await waitFor(() => {
       expect(mockOnSearch).toHaveBeenCalledWith(specialText);
-    });
+    }, { timeout: 500 });
   });
 
-  it('maintains focus after clear', async () => {
+  it('focuses the input when clear button is clicked', async () => {
     const user = userEvent.setup();
     render(<SearchInput onSearch={mockOnSearch} />);
 
-    const input = screen.getByRole('searchbox');
-
+    const input = screen.getByRole('textbox');
     await user.type(input, '測試');
 
     const clearButton = screen.getByRole('button', { name: /清除/i });

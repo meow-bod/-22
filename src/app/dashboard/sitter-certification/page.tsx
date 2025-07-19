@@ -1,8 +1,9 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import VideoPlayer from '@/components/ui/VideoPlayer';
+
 import Quiz from '@/components/ui/Quiz';
+import VideoPlayer from '@/components/ui/VideoPlayer';
 
 const quizQuestions = [
   {

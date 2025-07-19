@@ -2,8 +2,8 @@ import React from 'react';
 
 interface StatusIndicatorProps {
   loading: boolean;
-  user: any; // Can be a user object or null
-  data: any[]; // The data array to check for emptiness
+  user: object | null; // Can be a user object or null
+  data: unknown[]; // The data array to check for emptiness
   loadingMessage?: string;
   loginMessage?: string;
   emptyMessage?: string;

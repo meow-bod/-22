@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Sitter } from '@/types';
+
 import { Input, Button, Label, FormGroup } from '@/components/ui/Form';
+import { Sitter } from '@/types';
 
 interface SearchResultListProps {
   sitters: Sitter[];
@@ -26,7 +27,7 @@ const SearchResultList: React.FC<SearchResultListProps> = ({ sitters }) => {
 
       return locationMatch && keywordMatch;
     });
-  }, [sitters, location, serviceType, keyword]);
+  }, [sitters, location, keyword]);
 
   return (
     <div>

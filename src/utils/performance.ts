@@ -6,7 +6,7 @@ interface PerformanceMetric {
   name: string;
   value: number;
   timestamp: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number | boolean>;
 }
 
 // 效能監控類別
@@ -65,7 +65,7 @@ class PerformanceMonitor {
   }
 
   // 記錄效能指標
-  recordMetric(name: string, value: number, metadata?: Record<string, any>) {
+  recordMetric(name: string, value: number, metadata?: Record<string, string | number | boolean>) {
     const metric: PerformanceMetric = {
       name,
       value,
@@ -81,9 +81,7 @@ class PerformanceMonitor {
     }
 
     // 在開發環境中記錄到控制台
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[Performance] ${name}: ${value}ms`, metadata);
-    }
+
   }
 
   // 測量函數執行時間
@@ -148,7 +146,7 @@ const performanceMonitor = new PerformanceMonitor();
 // 導出工具函數
 export const measurePerformance = {
   // 記錄指標
-  record: (name: string, value: number, metadata?: Record<string, any>) => {
+  record: (name: string, value: number, metadata?: Record<string, string | number | boolean>) => {
     performanceMonitor.recordMetric(name, value, metadata);
   },
 

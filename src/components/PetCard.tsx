@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Pet } from '@/types';
 
 interface PetCardProps {
@@ -6,15 +7,24 @@ interface PetCardProps {
   onEdit: (pet: Pet) => void;
   onDelete: (petId: string) => void;
   isDeleting?: boolean;
+  className?: string;
 }
 
 // 使用 React.memo 優化效能，避免不必要的重新渲染
-const PetCard = React.memo(({ pet, onEdit, onDelete, isDeleting = false }: PetCardProps) => {
+const PetCard = React.memo(({ pet, onEdit, onDelete, isDeleting = false, className = '' }: PetCardProps) => {
   return (
-    <div className='bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow'>
+    <div className={`bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow ${className}`} role='article' aria-label={`寵物卡片: ${pet.name}`}>
       <div className='flex justify-between items-start mb-4'>
         <div>
-          <h3 className='text-xl font-semibold text-gray-800'>{pet.name}</h3>
+          <h3 className='text-xl font-semibold text-gray-800'>
+            <span className='mr-2' role='img' aria-label={pet.pet_type}>
+              {pet.pet_type === '狗' && '🐕'}
+              {pet.pet_type === '貓' && '🐱'}
+              {pet.pet_type === '鳥' && '🐦'}
+              {pet.pet_type !== '狗' && pet.pet_type !== '貓' && pet.pet_type !== '鳥' && '🐾'}
+            </span>
+            {pet.name}
+          </h3>
           <p className='text-gray-600'>
             {pet.pet_type} • {pet.breed}
           </p>
@@ -25,6 +35,7 @@ const PetCard = React.memo(({ pet, onEdit, onDelete, isDeleting = false }: PetCa
             onClick={() => onEdit(pet)}
             className='px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
             disabled={isDeleting}
+            aria-label={`編輯 ${pet.name}`}
           >
             編輯
           </button>
@@ -32,6 +43,7 @@ const PetCard = React.memo(({ pet, onEdit, onDelete, isDeleting = false }: PetCa
             onClick={() => onDelete(pet.id)}
             disabled={isDeleting}
             className='px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors disabled:opacity-50'
+            aria-label={`刪除 ${pet.name}`}
           >
             {isDeleting ? '刪除中...' : '刪除'}
           </button>

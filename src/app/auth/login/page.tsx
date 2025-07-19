@@ -1,17 +1,19 @@
 'use client';
 
-import { useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
 import {
   FormContainer,
   FormGroup,
   Label,
   Input,
   Button,
-  ErrorMessage,
 } from '@/components/ui/Form';
+import ErrorMessage from '@/components/ui/messages/ErrorMessage';
+import { createClient } from '@/lib/supabase/client';
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -67,6 +69,7 @@ export default function LoginPage() {
 
   return (
     <FormContainer title='登入您的 Pawdner 帳戶'>
+      {error && <ErrorMessage message={error} />}
       <form className='space-y-6' onSubmit={handleLogin}>
         <FormGroup>
           <Label htmlFor='email'>電子郵件</Label>
@@ -116,7 +119,7 @@ export default function LoginPage() {
           </Button>
         </div>
       </form>
-      <ErrorMessage message={error} />
+      
       <div className='text-sm text-center'>
         <Link href='/auth/signup' className='font-medium text-indigo-600 hover:text-indigo-500'>
           還沒有帳戶嗎？前往註冊

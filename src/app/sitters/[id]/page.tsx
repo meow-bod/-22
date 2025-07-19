@@ -1,9 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { User } from '@supabase/supabase-js';
+import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+
+import { createClient } from '@/lib/supabase/client';
 
 interface SitterDetail {
   id: string;
@@ -36,25 +39,19 @@ export default function SitterDetailPage({ params }: { params: { id: string } })
   const [sitter, setSitter] = useState<SitterDetail | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
   const supabase = createClient();
   const router = useRouter();
 
-  useEffect(() => {
-    checkUser();
-    fetchSitterDetail();
-    fetchReviews();
-  }, [params.id]);
-
-  const checkUser = async () => {
+  const checkUser = useCallback(async () => {
     const {
-      data: { user }
+      data: { user },
     } = await supabase.auth.getUser();
     setUser(user);
-  };
+  }, [supabase.auth]);
 
-  const fetchSitterDetail = async () => {
+  const fetchSitterDetail = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('sitters')
@@ -78,9 +75,9 @@ export default function SitterDetailPage({ params }: { params: { id: string } })
     } catch (error) {
       console.error('獲取保姆詳細資料失敗:', error);
     }
-  };
+  }, [params.id, supabase]);
 
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('reviews')
@@ -103,7 +100,13 @@ export default function SitterDetailPage({ params }: { params: { id: string } })
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id, supabase]);
+
+  useEffect(() => {
+    checkUser();
+    fetchSitterDetail();
+    fetchReviews();
+  }, [checkUser, fetchSitterDetail, fetchReviews]);
 
   const calculateAverageRating = () => {
     if (reviews.length === 0) return 0;
@@ -164,9 +167,11 @@ export default function SitterDetailPage({ params }: { params: { id: string } })
             {/* 頭像 */}
             <div className='w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0'>
               {sitter.users?.avatar_url ? (
-                <img
+                <Image
                   src={sitter.users.avatar_url}
                   alt={sitter.users?.full_name || '保姆'}
+                  width={128}
+                  height={128}
                   className='w-full h-full rounded-full object-cover'
                 />
               ) : (
@@ -197,6 +202,16 @@ export default function SitterDetailPage({ params }: { params: { id: string } })
                     <span className='font-medium'>已認證</span>
                   </div>
                 )}
+              </div>
+
+              {/* 預約按鈕 */}
+              <div className="mt-6">
+                <Link
+                  href={`/booking/new?sitterId=${sitter.id}`}
+                  className='w-full text-center block bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300'
+                >
+                  立即預約
+                </Link>
               </div>
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
@@ -316,11 +331,11 @@ export default function SitterDetailPage({ params }: { params: { id: string } })
               <p className='text-gray-600 mb-6'>請透過以下方式聯繫保姆進行預約：</p>
               <div className='space-y-4'>
                 <div className='p-4 bg-gray-50 rounded-lg'>
-                  <p className='text-sm text-gray-600 mb-1'>電子郵件</p>
+                  <span className='text-sm text-gray-600 mb-1 block'>電子郵件</span>
                   <p className='font-medium'>{sitter.users?.email}</p>
                 </div>
                 <div className='p-4 bg-blue-50 rounded-lg'>
-                  <p className='text-sm text-blue-600 mb-1'>收費標準</p>
+                  <span className='text-sm text-blue-600 mb-1 block'>收費標準</span>
                   <p className='font-medium text-blue-800'>NT$ {sitter.price_per_hour}/小時</p>
                 </div>
               </div>

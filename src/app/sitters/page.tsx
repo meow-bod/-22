@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+
+import { createClient } from '@/lib/supabase/client';
 
 interface Sitter {
   id: string;
@@ -26,11 +28,7 @@ export default function SittersPage() {
   const supabase = createClient();
   const router = useRouter();
 
-  useEffect(() => {
-    fetchSitters();
-  }, []);
-
-  const fetchSitters = async () => {
+  const fetchSitters = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('sitters')
@@ -53,7 +51,11 @@ export default function SittersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    fetchSitters();
+  }, [fetchSitters]);
 
   const filteredSitters = sitters.filter(sitter => {
     const matchesArea = !searchArea || sitter.service_area.toLowerCase().includes(searchArea.toLowerCase());
@@ -88,8 +90,9 @@ export default function SittersPage() {
           <h3 className='text-lg font-semibold mb-4'>搜尋篩選</h3>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
             <div>
-              <label className='block text-sm font-medium text-gray-700 mb-1'>服務地區</label>
+              <label htmlFor='search-area' className='block text-sm font-medium text-gray-700 mb-1'>服務地區</label>
               <input
+                id='search-area'
                 type='text'
                 value={searchArea}
                 onChange={e => setSearchArea(e.target.value)}
@@ -98,8 +101,9 @@ export default function SittersPage() {
               />
             </div>
             <div>
-              <label className='block text-sm font-medium text-gray-700 mb-1'>最低價格 (NT$/小時)</label>
+              <label htmlFor='min-price' className='block text-sm font-medium text-gray-700 mb-1'>最低價格 (NT$/小時)</label>
               <input
+                id='min-price'
                 type='number'
                 value={priceRange.min}
                 onChange={e => setPriceRange({ ...priceRange, min: parseInt(e.target.value) || 0 })}
@@ -108,8 +112,9 @@ export default function SittersPage() {
               />
             </div>
             <div>
-              <label className='block text-sm font-medium text-gray-700 mb-1'>最高價格 (NT$/小時)</label>
+              <label htmlFor='max-price' className='block text-sm font-medium text-gray-700 mb-1'>最高價格 (NT$/小時)</label>
               <input
+                id='max-price'
                 type='number'
                 value={priceRange.max}
                 onChange={e => setPriceRange({ ...priceRange, max: parseInt(e.target.value) || 1000 })}
@@ -147,9 +152,11 @@ export default function SittersPage() {
                 <div className='p-6 text-center'>
                   <div className='w-20 h-20 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center'>
                     {sitter.users?.avatar_url ? (
-                      <img
+                      <Image
                         src={sitter.users.avatar_url}
                         alt={sitter.users?.full_name || '保姆'}
+                        width={80}
+                        height={80}
                         className='w-full h-full rounded-full object-cover'
                       />
                     ) : (

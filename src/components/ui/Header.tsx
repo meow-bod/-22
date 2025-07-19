@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+
 import { createClient } from '@/utils/supabase/client';
 
 const Header = () => {
@@ -12,7 +13,7 @@ const Header = () => {
     const checkAdmin = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from('users')
           .select('is_admin')
           .eq('id', user.id)

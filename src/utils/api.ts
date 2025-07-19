@@ -2,16 +2,17 @@
 // 統一處理 Supabase 操作、錯誤處理和資料轉換
 
 import { createClient } from '@/lib/supabase/client';
-import { Pet, Sitter, Review, Booking, ApiResponse, PetFormData, SitterFormData } from '@/types';
+import { Pet, Sitter, Review, ApiResponse, PetFormData, SitterFormData, Profile } from '@/types';
 
 const supabase = createClient();
 
 // 通用錯誤處理函數
-function handleError(error: any): ApiResponse<null> {
+function handleError(error: unknown): ApiResponse<null> {
   console.error('API Error:', error);
+  const message = error instanceof Error ? error.message : '發生未知錯誤';
   return {
     data: null,
-    error: error.message || '發生未知錯誤',
+    error: message,
     success: false
   };
 }
@@ -231,7 +232,7 @@ export const reviewApi = {
 // 使用者相關 API
 export const userApi = {
   // 更新使用者個人資料
-  async updateProfile(userId: string, profileData: { full_name: string }): Promise<ApiResponse<any>> {
+  async updateProfile(userId: string, profileData: { full_name: string }): Promise<ApiResponse<Profile>> {
     try {
       const { data, error } = await supabase.from('users').update(profileData).eq('id', userId).select().single();
 
@@ -243,7 +244,7 @@ export const userApi = {
   },
 
   // 取得使用者個人資料
-  async getProfile(userId: string): Promise<ApiResponse<any>> {
+  async getProfile(userId: string): Promise<ApiResponse<Profile>> {
     try {
       const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
 

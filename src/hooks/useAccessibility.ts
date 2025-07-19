@@ -2,7 +2,6 @@ import { useEffect, useCallback, useRef, useState } from 'react';
 
 // 焦點管理 Hook
 export function useFocusManagement() {
-  const focusHistoryRef = useRef<HTMLElement[]>([]);
   const currentFocusRef = useRef<HTMLElement | null>(null);
 
   // 儲存當前焦點
@@ -337,7 +336,7 @@ export function generateAriaProps({
   live?: 'off' | 'polite' | 'assertive';
   atomic?: boolean;
 } = {}) {
-  const props: Record<string, any> = {};
+  const props: Record<string, string | boolean> = {};
 
   if (label) props['aria-label'] = label;
   if (labelledBy) props['aria-labelledby'] = labelledBy;

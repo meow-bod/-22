@@ -1,9 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { type User } from '@supabase/supabase-js';
+import { useState, useEffect } from 'react';
+
 import { createClient } from '@/lib/supabase/client';
 
-export default function AddPetModal({ user, isOpen, onClose, onPetAdded, petToEdit, onPetUpdated }) {
+interface Pet {
+  id: string;
+  name: string;
+  species: string;
+  breed: string;
+  birth_date: string;
+  gender: string;
+  avatar_url: string;
+}
+
+interface AddPetModalProps {
+  user: User | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onPetAdded: (pet: Pet) => void;
+  petToEdit: Pet | null;
+  onPetUpdated: (pet: Pet) => void;
+}
+
+export default function AddPetModal({ user, isOpen, onClose, onPetAdded, petToEdit, onPetUpdated }: AddPetModalProps) {
   const supabase = createClient();
   const [name, setName] = useState('');
   const [species, setSpecies] = useState('');
@@ -31,7 +52,7 @@ export default function AddPetModal({ user, isOpen, onClose, onPetAdded, petToEd
     }
   }, [petToEdit, isEditMode, isOpen]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user) return;
 
@@ -93,28 +114,33 @@ export default function AddPetModal({ user, isOpen, onClose, onPetAdded, petToEd
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">名字</label>
-              <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+              <label className="block text-sm font-medium text-gray-700">名字
+                <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+              </label>
             </div>
             <div>
-              <label htmlFor="species" className="block text-sm font-medium text-gray-700">物種 (例如: 狗, 貓)</label>
-              <input id="species" type="text" value={species} onChange={(e) => setSpecies(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+              <label className="block text-sm font-medium text-gray-700">物種 (例如: 狗, 貓)
+                <input type="text" value={species} onChange={(e) => setSpecies(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+              </label>
             </div>
             <div>
-              <label htmlFor="breed" className="block text-sm font-medium text-gray-700">品種</label>
-              <input id="breed" type="text" value={breed} onChange={(e) => setBreed(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+              <label className="block text-sm font-medium text-gray-700">品種
+                <input type="text" value={breed} onChange={(e) => setBreed(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+              </label>
             </div>
             <div>
-              <label htmlFor="birthDate" className="block text-sm font-medium text-gray-700">生日</label>
-              <input id="birthDate" type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+              <label className="block text-sm font-medium text-gray-700">生日
+                <input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+              </label>
             </div>
             <div>
-              <label htmlFor="gender" className="block text-sm font-medium text-gray-700">性別</label>
-              <select id="gender" value={gender} onChange={(e) => setGender(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                <option value="">請選擇</option>
-                <option value="Male">公</option>
-                <option value="Female">母</option>
-              </select>
+              <label className="block text-sm font-medium text-gray-700">性別
+                <select value={gender} onChange={(e) => setGender(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                  <option value="">請選擇</option>
+                  <option value="Male">公</option>
+                  <option value="Female">母</option>
+                </select>
+              </label>
             </div>
           </div>
           <div className="mt-6 flex justify-end space-x-3">

@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
-import { Button } from '@/components/ui/Form';
 import { useRouter } from 'next/navigation';
+import React, { useState, useTransition } from 'react';
+
+import { Button } from '@/components/ui/Form';
 import { createClient } from '@/lib/supabase/client';
 
 // 定義傳入的 applicant 物件的型別

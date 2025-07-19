@@ -2,11 +2,12 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
+
+import StatusIndicator from '@/components/ui/StatusIndicator';
 import { useUser } from '@/hooks/useUser';
 import { getMatchesForUser } from '@/lib/supabase/queries';
-import StatusIndicator from '@/components/ui/StatusIndicator';
 import { type Match } from '@/types/match';
 
 export default function MatchesPage() {

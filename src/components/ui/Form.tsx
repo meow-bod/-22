@@ -35,6 +35,25 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className
 ));
 Input.displayName = 'Input';
 
+// Checkbox: 表單的複選框
+interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+}
+export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(({ className, label, ...props }, ref) => (
+  <div className="flex items-center">
+    <input
+      ref={ref}
+      type="checkbox"
+      className={`h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary ${className}`}
+      {...props}
+    />
+    <Label htmlFor={props.id} className="ml-2 text-sm text-text-main">
+      {label}
+    </Label>
+  </div>
+));
+Checkbox.displayName = 'Checkbox';
+
 // Button: 表單的提交按鈕
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 export const Button = ({ children, className, ...props }: ButtonProps) => (
@@ -45,15 +64,3 @@ export const Button = ({ children, className, ...props }: ButtonProps) => (
     {children}
   </button>
 );
-
-// ErrorMessage: 用於顯示錯誤訊息
-export const ErrorMessage = ({ message }: { message: string | null }) => {
-  if (!message) return null;
-  return <p className='mt-2 text-sm text-center text-red-600'>{message}</p>;
-};
-
-// SuccessMessage: 用於顯示成功訊息
-export const SuccessMessage = ({ message }: { message: string | null }) => {
-  if (!message) return null;
-  return <p className='mt-2 text-sm text-center text-green-600'>{message}</p>;
-};

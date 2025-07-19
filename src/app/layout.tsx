@@ -1,27 +1,40 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import type { Metadata, Viewport } from 'next'
+import { Nunito } from 'next/font/google'
+
 import AppWrapper from './AppWrapper';
-import Header from '@/components/ui/Header'; // 匯入 Header 元件
+
+import Footer from '@/components/layout/Footer';
+import Navbar from '@/components/layout/Navbar';
 import './globals.css';
 
-const inter = Inter({
+const nunito = Nunito({
   subsets: ['latin'],
-  variable: '--font-inter'
-})
+  variable: '--font-nunito',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
+  metadataBase: new URL('http://localhost:3000'),
   title: 'Pawdner - 寵物保姆媒合平台',
   description: '專業的寵物保姆媒合平台，為您的毛小孩找到最適合的照護服務',
   keywords: '寵物保姆, 寵物照護, 寵物服務, 毛小孩, 寵物媒合',
   authors: [{ name: 'Pawdner Team' }],
-  viewport: 'width=device-width, initial-scale=1',
   robots: 'index, follow',
   openGraph: {
     title: 'Pawdner - 寵物保姆媒合平台',
     description: '專業的寵物保姆媒合平台，為您的毛小孩找到最適合的照護服務',
     type: 'website',
     locale: 'zh_TW'
-  }
+  },
+  icons: {
+    icon: '/favicon.ico',
+  },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#FFA726', // 我們的主色調
 }
 
 export default function RootLayout({
@@ -31,14 +44,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='zh-TW'>
-      <head>
-        <meta name='theme-color' content='#3B82F6' />
-        <link rel='icon' href='/favicon.ico' />
-      </head>
-      <body className={`${inter.variable} antialiased bg-background-subtle`}>
+
+      <body className={`${nunito.variable} font-sans antialiased bg-background-subtle flex flex-col min-h-screen text-text-main`}>
         <AppWrapper>
-          <Header />
-          <main>{children}</main>
+          <Navbar />
+          <main className="flex-grow">{children}</main>
+          <Footer />
         </AppWrapper>
       </body>
     </html>

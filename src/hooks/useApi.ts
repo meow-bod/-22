@@ -14,15 +14,15 @@ interface ApiOptions {
   cacheTime?: number; // 快取時間（毫秒）
   retryCount?: number; // 重試次數
   retryDelay?: number; // 重試延遲（毫秒）
-  onSuccess?: (data: any) => void;
+  onSuccess?: (data: T) => void;
   onError?: (error: string) => void;
 }
 
 // 快取管理
-class ApiCache {
-  private cache = new Map<string, { data: any; timestamp: number; cacheTime: number }>();
+class ApiCache<T> {
+  private cache = new Map<string, { data: T; timestamp: number; cacheTime: number }>();
 
-  set(key: string, data: any, cacheTime: number) {
+  set(key: string, data: T, cacheTime: number) {
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
@@ -30,7 +30,7 @@ class ApiCache {
     });
   }
 
-  get(key: string): any | null {
+  get(key: string): T | null {
     const cached = this.cache.get(key);
     if (!cached) return null;
 
@@ -65,10 +65,10 @@ class ApiCache {
   }
 }
 
-const apiCache = new ApiCache();
+const apiCache = new ApiCache<unknown>();
 
 // 通用 API Hook
-export function useApi<T = any>(apiFunction: () => Promise<T>, dependencies: any[] = [], options: ApiOptions = {}) {
+export function useApi<T>(apiFunction: () => Promise<T>, dependencies: unknown[] = [], options: ApiOptions = {}) {
   const {
     immediate = true,
     cacheTime = 5 * 60 * 1000, // 預設快取 5 分鐘
@@ -156,7 +156,7 @@ export function useApi<T = any>(apiFunction: () => Promise<T>, dependencies: any
           }
 
           return result;
-        } catch (error: any) {
+        } catch (error: unknown) {
           // 如果請求被取消，不處理錯誤
           if (controller.signal.aborted || error.message === 'Request aborted') {
             return Promise.reject(error);
@@ -190,7 +190,8 @@ export function useApi<T = any>(apiFunction: () => Promise<T>, dependencies: any
 
       return attemptRequest();
     },
-    [apiFunction, generateCacheKey, cacheTime, retryCount, retryDelay, onSuccess, onError]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [generateCacheKey, cacheTime, retryCount, retryDelay, onSuccess, onError]
   );
 
   // 重新整理數據
@@ -229,7 +230,8 @@ export function useApi<T = any>(apiFunction: () => Promise<T>, dependencies: any
         clearTimeout(retryTimeoutRef.current);
       }
     };
-  }, dependencies); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, dependencies);
 
   return {
     ...state,
@@ -242,7 +244,7 @@ export function useApi<T = any>(apiFunction: () => Promise<T>, dependencies: any
 }
 
 // 突變 API Hook（用於 POST、PUT、DELETE 等操作）
-export function useMutation<T = any, P = any>(
+export function useMutation<T, P>( 
   mutationFunction: (params: P) => Promise<T>,
   options: {
     onSuccess?: (data: T, params: P) => void;
@@ -299,7 +301,7 @@ export function useMutation<T = any, P = any>(
         }
 
         return result;
-      } catch (error: any) {
+      } catch (error: unknown) {
         // 如果請求被取消，不處理錯誤
         if (controller.signal.aborted || error.message === 'Request aborted') {
           return Promise.reject(error);
@@ -351,7 +353,7 @@ export function useMutation<T = any, P = any>(
 }
 
 // 分頁 API Hook
-export function usePaginatedApi<T = any>(
+export function usePaginatedApi<T>(
   apiFunction: (page: number, limit: number) => Promise<{ data: T[]; total: number; page: number; limit: number }>,
   initialPage = 1,
   initialLimit = 10,

@@ -1,16 +1,25 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
-import { createClient } from '@/lib/supabase/client';
-import { Pet, PetFormData, ValidationErrors } from '@/types';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
+
 import { LoadingSpinner, EmptyState } from '@/components/LoadingSpinner';
-import { ErrorMessage } from '@/components/ErrorMessage';
 import { PetList } from '@/components/PetList';
 import { SearchInput } from '@/components/SearchInput';
-import { validatePetForm as validatePet, hasValidationErrors as hasErrors } from '@/utils/validation';
+import {
+  FormContainer,
+  FormGroup,
+  Label,
+  Input,
+  Button,
+  Select,
+} from '@/components/ui/Form';
+import { ErrorMessage } from '@/components/ui/messages/ErrorMessage';
+import { createClient } from '@/lib/supabase/client';
+import { Pet, PetFormData, ValidationErrors } from '@/types';
 import { petApi as petAPI } from '@/utils/api';
+import { validatePetForm as validatePet, hasValidationErrors as hasErrors } from '@/utils/validation';
 
 export default function PetsPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -176,32 +185,30 @@ export default function PetsPage() {
 
         {/* 新增/編輯表單 */}
         {showAddForm && (
-          <div className='bg-white rounded-lg shadow-md p-6 mb-8'>
+          <FormContainer>
             <h2 className='text-xl font-semibold mb-4'>{editingPet ? '編輯寵物資料' : '新增寵物'}</h2>
-            <form onSubmit={handleSubmit} className='space-y-4'>
+            <form onSubmit={handleSubmit}>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-1'>寵物名稱 *</label>
-                  <input
+                <FormGroup>
+                  <Label htmlFor='name'>寵物名稱 *</Label>
+                  <Input
+                    id='name'
                     type='text'
                     required
                     value={formData.name}
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      validationErrors.name ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    error={!!validationErrors.name}
                   />
                   {validationErrors.name && <p className='mt-1 text-sm text-red-600'>{validationErrors.name}</p>}
-                </div>
-                <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-1'>寵物類型 *</label>
-                  <select
+                </FormGroup>
+                <FormGroup>
+                  <Label htmlFor='pet_type'>寵物類型 *</Label>
+                  <Select
+                    id='pet_type'
                     required
                     value={formData.pet_type}
                     onChange={e => setFormData({ ...formData, pet_type: e.target.value })}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      validationErrors.pet_type ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    error={!!validationErrors.pet_type}
                   >
                     <option value=''>請選擇</option>
                     <option value='Dog'>狗</option>
@@ -209,65 +216,56 @@ export default function PetsPage() {
                     <option value='Bird'>鳥</option>
                     <option value='Rabbit'>兔子</option>
                     <option value='Other'>其他</option>
-                  </select>
+                  </Select>
                   {validationErrors.pet_type && (
                     <p className='mt-1 text-sm text-red-600'>{validationErrors.pet_type}</p>
                   )}
-                </div>
-                <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-1'>品種</label>
-                  <input
+                </FormGroup>
+                <FormGroup>
+                  <Label htmlFor='breed'>品種</Label>
+                  <Input
+                    id='breed'
                     type='text'
                     value={formData.breed}
                     onChange={e => setFormData({ ...formData, breed: e.target.value })}
-                    className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
                   />
-                </div>
-                <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-1'>年齡</label>
-                  <input
+                </FormGroup>
+                <FormGroup>
+                  <Label htmlFor='age'>年齡</Label>
+                  <Input
+                    id='age'
                     type='number'
                     min='0'
                     max='30'
                     value={formData.age}
                     onChange={e => setFormData({ ...formData, age: parseInt(e.target.value) || 0 })}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      validationErrors.age ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    error={!!validationErrors.age}
                   />
                   {validationErrors.age && <p className='mt-1 text-sm text-red-600'>{validationErrors.age}</p>}
-                </div>
+                </FormGroup>
               </div>
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-1'>注意事項</label>
+              <FormGroup>
+                <Label htmlFor='notes'>注意事項</Label>
                 <textarea
+                  id='notes'
                   rows={3}
                   value={formData.notes}
                   onChange={e => setFormData({ ...formData, notes: e.target.value })}
                   className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
                   placeholder='例如：特殊飲食需求、健康狀況、行為特點等'
                 />
-              </div>
+              </FormGroup>
               <div className='flex space-x-4'>
-                <button
-                  type='submit'
-                  disabled={submitting}
-                  className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center'
-                >
+                <Button type='submit' disabled={submitting}>
                   {submitting && <LoadingSpinner size='small' className='mr-2' />}
                   {editingPet ? '更新' : '新增'}
-                </button>
-                <button
-                  type='button'
-                  onClick={resetForm}
-                  disabled={submitting}
-                  className='px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 disabled:opacity-50'
-                >
+                </Button>
+                <Button type='button' onClick={resetForm} disabled={submitting} variant='secondary'>
                   取消
-                </button>
+                </Button>
               </div>
             </form>
-          </div>
+          </FormContainer>
         )}
 
         {/* 寵物列表 */}

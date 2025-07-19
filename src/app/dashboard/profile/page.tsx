@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { createClient } from '@/lib/supabase/client';
 import { type User } from '@supabase/supabase-js';
+import { useState, useEffect, useCallback } from 'react';
+
 import Avatar from '@/components/ui/Avatar';
+import { createClient } from '@/lib/supabase/client';
 
 export default function ProfilePage() {
   const supabase = createClient();
@@ -43,17 +44,21 @@ export default function ProfilePage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
-        getProfile(user);
       } else {
         setLoading(false);
       }
     };
 
     fetchUser();
-  }, [supabase, getProfile]);
+  }, [supabase.auth]);
 
-  async function updateProfile(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  useEffect(() => {
+    if (user) {
+      getProfile(user);
+    }
+  }, [user, getProfile]);
+
+  async function updateProfile({ fullName, website, avatarUrl }: { fullName: string, website: string, avatarUrl: string }) {
     if (!user) return;
 
     if (!fullName.trim()) {
@@ -94,15 +99,14 @@ export default function ProfilePage() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">個人資料</h1>
-      <form onSubmit={updateProfile} className="space-y-4">
+      <form onSubmit={(e) => { e.preventDefault(); updateProfile({ fullName, website, avatarUrl }); }} className="space-y-4">
         <Avatar
           uid={user.id}
           url={avatarUrl}
           size={150}
           onUpload={(url) => {
             setAvatarUrl(url);
-            // Immediately trigger update to save the new avatar URL
-            updateProfile({ preventDefault: () => {} }); 
+            updateProfile({ fullName, website, avatarUrl: url });
           }}
         />
         <div>

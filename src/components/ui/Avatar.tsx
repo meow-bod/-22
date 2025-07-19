@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
+import React, { useEffect, useState } from 'react'
+
+import { createClient } from '@/lib/supabase/client'
 
 export default function Avatar({ uid, url, size, onUpload }) {
   const supabase = createClient()
@@ -19,8 +20,8 @@ export default function Avatar({ uid, url, size, onUpload }) {
 
         const url = URL.createObjectURL(data)
         setAvatarUrl(url)
-      } catch (error) {
-        console.log('Error downloading image: ', error)
+      } catch (_error) {
+        // console.log('Error downloading image: ', error)
       }
     }
 
@@ -46,7 +47,7 @@ export default function Avatar({ uid, url, size, onUpload }) {
       }
 
       onUpload(filePath)
-    } catch (error) {
+    } catch (_error) {
       alert('Error uploading avatar!')
     } finally {
       setUploading(false)

@@ -5,9 +5,10 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+
+import StatusIndicator from '@/components/ui/StatusIndicator';
 import { useUser } from '@/hooks/useUser';
 import { getSwipeProfilesForUser, recordSwipe } from '@/lib/supabase/queries';
-import StatusIndicator from '@/components/ui/StatusIndicator';
 import { type Pet } from '@/types/pet';
 
 export default function SwipePage() {

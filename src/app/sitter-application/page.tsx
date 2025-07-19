@@ -1,15 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import Link from 'next/link';
-import { SitterFormData, ValidationErrors } from '@/types';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { validateSitterForm as validateSitterApplication, hasValidationErrors as hasErrors } from '@/utils/validation';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { createClient } from '@/lib/supabase/client';
+import { SitterFormData, ValidationErrors } from '@/types';
 import { sitterApi as sitterAPI } from '@/utils/api';
+import { validateSitterForm as validateSitterApplication, hasValidationErrors as hasErrors } from '@/utils/validation';
 
 export default function SitterApplication() {
   const [user, setUser] = useState<User | null>(null);

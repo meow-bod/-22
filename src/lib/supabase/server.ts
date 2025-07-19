@@ -17,7 +17,7 @@ export function createClient() {
         set(name: string, value: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value, ...options });
-          } catch (error) {
+          } catch (_error) {
             // 當在 Server Component 中呼叫 `set` 方法時，可能會發生錯誤。
             // 如果您有中介軟體 (middleware) 來刷新使用者 session，可以忽略此錯誤。
           }
@@ -25,7 +25,7 @@ export function createClient() {
         remove(name: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value: '', ...options });
-          } catch (error) {
+          } catch (_error) {
             // 當在 Server Component 中呼叫 `remove` 方法時，可能會發生錯誤。
             // 如果您有中介軟體 (middleware) 來刷新使用者 session，可以忽略此錯誤。
           }

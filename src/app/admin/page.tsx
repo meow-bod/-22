@@ -1,7 +1,9 @@
-import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+
 import AdminDashboardClient from './AdminDashboardClient';
+
+import { createClient } from '@/lib/supabase/server';
 
 // 這是伺服器元件，負責獲取資料和權限檢查
 const AdminDashboardPage = async () => {

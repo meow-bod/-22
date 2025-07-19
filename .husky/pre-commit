@@ -10,4 +10,4 @@ npm run type-check
 # 執行測試 (僅針對變更的檔案)
 npm run test -- --bail --findRelatedTests --passWithNoTests
 
-echo "✅ Pre-commit checks passed!"
+echo "✅ Pre-commit checks passed!"npx lint-staged

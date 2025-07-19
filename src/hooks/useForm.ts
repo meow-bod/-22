@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 
 // 表單欄位配置介面
 interface FormFieldConfig {
@@ -6,12 +6,12 @@ interface FormFieldConfig {
   minLength?: number;
   maxLength?: number;
   pattern?: RegExp;
-  validator?: (value: any) => string | null;
-  transform?: (value: any) => any;
+  validator?: (value: unknown) => string | null;
+  transform?: (value: unknown) => unknown;
 }
 
 // 表單配置介面
-interface FormConfig<T> {
+interface FormConfig {
   [key: string]: FormFieldConfig;
 }
 
@@ -27,7 +27,7 @@ interface FormState<T> {
 
 // 表單動作介面
 interface FormActions<T> {
-  setValue: (field: keyof T, value: any) => void;
+  setValue: (field: keyof T, value: unknown) => void;
   setValues: (values: Partial<T>) => void;
   setError: (field: keyof T, error: string) => void;
   setErrors: (errors: Partial<Record<keyof T, string>>) => void;
@@ -41,7 +41,7 @@ interface FormActions<T> {
 }
 
 // 自訂表單 Hook
-export function useForm<T extends Record<string, any>>(
+export function useForm<T extends Record<string, unknown>>(
   initialValues: T,
   config: FormConfig<T> = {},
   options: {
@@ -61,7 +61,7 @@ export function useForm<T extends Record<string, any>>(
 
   // 驗證單個欄位
   const validateField = useCallback(
-    (field: keyof T, value: any): string | null => {
+    (field: keyof T, value: unknown): string | null => {
       const fieldConfig = config[field as string];
       if (!fieldConfig) return null;
 
@@ -131,7 +131,7 @@ export function useForm<T extends Record<string, any>>(
 
   // 設定單個欄位值
   const setValue = useCallback(
-    (field: keyof T, value: any) => {
+    (field: keyof T, value: unknown) => {
       const fieldConfig = config[field as string];
       const transformedValue = fieldConfig?.transform ? fieldConfig.transform(value) : value;
 
@@ -298,7 +298,7 @@ export function useFormField<T>(form: FormState<T> & FormActions<T>, field: keyo
   const hasError = touched && !!error;
 
   const onChange = useCallback(
-    (value: any) => {
+    (value: unknown) => {
       form.setValue(field, value);
     },
     [form, field]

@@ -1,10 +1,10 @@
-import globals from 'globals';
-import tseslint from 'typescript-eslint';
+import nextPlugin from '@next/eslint-plugin-next';
+import pluginImport from 'eslint-plugin-import';
+import pluginJsxA11y from 'eslint-plugin-jsx-a11y';
 import pluginReact from 'eslint-plugin-react';
 import pluginReactHooks from 'eslint-plugin-react-hooks';
-import pluginJsxA11y from 'eslint-plugin-jsx-a11y';
-import pluginImport from 'eslint-plugin-import';
-import nextPlugin from '@next/eslint-plugin-next';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {

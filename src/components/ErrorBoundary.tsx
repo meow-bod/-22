@@ -1,6 +1,7 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+
 import { ErrorMessage } from './ErrorMessage';
 
 interface Props {
@@ -54,7 +55,11 @@ class ErrorBoundary extends Component<Props, State> {
   private logErrorToService(error: Error, errorInfo: ErrorInfo) {
     // 這裡可以整合錯誤追蹤服務
     // 例如：Sentry.captureException(error, { extra: errorInfo });
-    console.log('Logging error to service:', { error, errorInfo });
+    // 在這個範例中，我們只在開發環境中打印日誌
+    if (process.env.NODE_ENV === 'development') {
+      // 使用 console.error 來表示這是一個錯誤日誌
+      console.error('Logging error to service:', { error, errorInfo });
+    }
   }
 
   private handleRetry = () => {

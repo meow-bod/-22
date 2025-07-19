@@ -1,4 +1,5 @@
 import { createClient } from './client';
+
 import { type Match } from '@/types/match'; // Assuming you have a type definition for Match
 import { type Pet } from '@/types/pet'; // Assuming you have a type definition for Pet
 
@@ -83,7 +84,7 @@ export const getSwipeProfilesForUser = async (userId: string): Promise<Pet[]> =>
   return petProfiles || [];
 };
 
-export const recordSwipe = async (userId: string, swipedPetId: string, liked: boolean): Promise<{ success: boolean; error?: any }> => {
+export const recordSwipe = async (userId: string, swipedPetId: string, liked: boolean): Promise<{ success: boolean; error?: string | null }> => {
   if (!userId) return { success: false, error: 'User not found' };
 
   // For simplicity, we'll assume the first pet of the user is the swiper

@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
-import { Pet } from '@/types';
-import { PetCard } from './PetCard';
+
 import { EmptyState } from './ErrorMessage';
+import { PetCard } from './PetCard';
+
+import { Pet } from '@/types';
 
 interface PetListProps {
   pets: Pet[];

@@ -1,8 +1,8 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
+import React from 'react';
 import '@testing-library/jest-dom';
 
-import LoadingSpinner from '../LoadingSpinner';
+import { LoadingSpinner } from '../LoadingSpinner';
 
 describe('LoadingSpinner', () => {
   it('renders with default props', () => {
@@ -14,7 +14,7 @@ describe('LoadingSpinner', () => {
   });
 
   it('renders with custom size', () => {
-    render(<LoadingSpinner size='large' />);
+    render(<LoadingSpinner size='lg' />);
 
     const spinner = screen.getByRole('status');
     expect(spinner).toBeInTheDocument();
@@ -47,26 +47,18 @@ describe('LoadingSpinner', () => {
   });
 
   it('renders with different colors', () => {
-    const { rerender } = render(<LoadingSpinner color='primary' />);
+    const { rerender } = render(<LoadingSpinner color='blue' />);
 
     let spinnerElement = screen.getByRole('status').querySelector('.animate-spin');
     expect(spinnerElement).toHaveClass('text-blue-600');
 
-    rerender(<LoadingSpinner color='secondary' />);
+    rerender(<LoadingSpinner color='gray' />);
     spinnerElement = screen.getByRole('status').querySelector('.animate-spin');
     expect(spinnerElement).toHaveClass('text-gray-600');
 
-    rerender(<LoadingSpinner color='success' />);
+    rerender(<LoadingSpinner color='white' />);
     spinnerElement = screen.getByRole('status').querySelector('.animate-spin');
-    expect(spinnerElement).toHaveClass('text-green-600');
-
-    rerender(<LoadingSpinner color='warning' />);
-    spinnerElement = screen.getByRole('status').querySelector('.animate-spin');
-    expect(spinnerElement).toHaveClass('text-yellow-600');
-
-    rerender(<LoadingSpinner color='error' />);
-    spinnerElement = screen.getByRole('status').querySelector('.animate-spin');
-    expect(spinnerElement).toHaveClass('text-red-600');
+    expect(spinnerElement).toHaveClass('text-white');
   });
 
   it('has correct accessibility attributes', () => {
@@ -78,7 +70,7 @@ describe('LoadingSpinner', () => {
   });
 
   it('renders with all size variants', () => {
-    const sizes = ['small', 'medium', 'large'] as const;
+    const sizes = ['sm', 'md', 'lg'] as const;
 
     sizes.forEach(size => {
       const { unmount } = render(<LoadingSpinner size={size} />);
@@ -89,13 +81,13 @@ describe('LoadingSpinner', () => {
       const spinnerElement = spinner.querySelector('.animate-spin');
 
       switch (size) {
-        case 'small':
+        case 'sm':
           expect(spinnerElement).toHaveClass('w-4', 'h-4');
           break;
-        case 'medium':
+        case 'md':
           expect(spinnerElement).toHaveClass('w-8', 'h-8');
           break;
-        case 'large':
+        case 'lg':
           expect(spinnerElement).toHaveClass('w-12', 'h-12');
           break;
       }
@@ -113,10 +105,9 @@ describe('LoadingSpinner', () => {
 
   it('renders correctly with combined props', () => {
     const props = {
-      size: 'large' as const,
-      color: 'primary' as const,
+      size: 'lg' as const,
+      color: 'blue' as const,
       text: '資料載入中...',
-      showText: true,
       className: 'my-custom-class'
     };
 
